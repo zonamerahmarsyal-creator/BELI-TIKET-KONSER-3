@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ticket Event</title>
+
+<style>
+*{box-sizing:border-box;font-family:sans-serif;}
+body{margin:0;background:#f2f2f2;}
+
+.page{
+  display:none;
+  padding:15px;
+  padding-bottom:110px;
+}
+.active{display:block;}
+
+.timer{
+  background:#f3e3b0;
+  padding:10px;
+  border-radius:10px;
+  text-align:center;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.poster img{
+  width:100%;
+  border-radius:15px;
+  margin-bottom:15px;
+}
+
+.card{
+  background:white;
+  border-radius:15px;
+  margin-bottom:15px;
+  overflow:hidden;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+
+.card-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px;
+}
+
+.title{color:#888;}
+.price{font-weight:bold;margin-top:5px;}
+
+.card-desc{
+  background:#eee;
+  padding:15px;
+  font-size:14px;
+}
+
+.sold{
+  opacity:0.5;
+  position:relative;
+}
+.sold::after{
+  content:"SOLD OUT";
+  position:absolute;
+  right:20px;
+  top:20px;
+  color:red;
+  border:2px solid red;
+  padding:5px;
+  transform:rotate(-15deg);
+}
+
+.qty-box{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  border:2px solid #ccc;
+  border-radius:15px;
+  padding:5px 15px;
+}
+
+.qty-box button{
+  border:none;
+  background:none;
+  font-size:20px;
+}
+
+.qty-box span{
+  font-size:18px;
+  min-width:20px;
+  text-align:center;
+}
+
+.total-bar{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:white;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  box-shadow:0 -2px 10px rgba(0,0,0,0.1);
+  z-index:99;
+}
+
+input,select{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  margin-bottom:10px;
+}
+
+.btn{
+  background:#2ecc71;
+  border:none;
+  color:white;
+  padding:10px;
+  border-radius:10px;
+  width:100%;
+}
+
+.center{text-align:center;}
+</style>
+</head>
+
+<body>
+
+<!-- PAGE 1 -->
+<div class="page active" id="page1">
+
+<div class="timer">
+Complete your order in <span id="countdown">15:00</span>
+</div>
+
+<div class="poster">
+<img src="POSTER_KAMU.jpg">
+</div>
+
+<h2>Ticket Category</h2>
+
+<!-- REGULAR SOLD -->
+<div class="card sold">
+  <div class="card-top">
+    <div>
+      <div class="title">Regular</div>
+      <div class="price">Rp185.000</div>
+    </div>
+  </div>
+  <div class="card-desc">
+    Include: 1 tiket Regular Sunset di Kebun, 1 tiket masuk perorangan Kebun Raya Bali
+  </div>
+</div>
+
+<!-- VIP -->
+<div class="card">
+  <div class="card-top">
+    <div>
+      <div class="title">VIP</div>
+      <div class="price">Rp400.000</div>
+    </div>
+
+    <div class="qty-box">
+      <button onclick="changeQty('vip',-1)">-</button>
+      <span id="vip">0</span>
+      <button onclick="changeQty('vip',1)">+</button>
+    </div>
+  </div>
+
+  <div class="card-desc">
+    Include: 1 tiket VIP Sunset di Kebun, 1 tiket masuk perorangan Kebun Raya Bali,
+    1 Bean Bag, 1 Plant Heroes, area nonton khusus VIP
+  </div>
+</div>
+
+<!-- COUPLE -->
+<div class="card">
+  <div class="card-top">
+    <div>
+      <div class="title">Intimate Couple</div>
+      <div class="price">Rp350.000</div>
+    </div>
+
+    <div class="qty-box">
+      <button onclick="changeQty('couple',-1)">-</button>
+      <span id="couple">0</span>
+      <button onclick="changeQty('couple',1)">+</button>
+    </div>
+  </div>
+
+  <div class="card-desc">
+    Include: 2 tiket regular Sunset di Kebun, 2 tiket masuk perorangan Kebun Raya Bali
+  </div>
+</div>
+
+<div class="total-bar">
+  <div>Total: Rp <span id="total">0</span></div>
+  <button class="btn" onclick="toForm()">Lanjut</button>
+</div>
+
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="page2">
+
+<h2>Form Pembelian</h2>
+
+<input id="nama" placeholder="Nama Lengkap">
+<input id="nik" placeholder="Nomor Identitas">
+<input id="email" placeholder="Email">
+<input id="wa" placeholder="No WhatsApp">
+<input id="alamat" placeholder="Alamat">
+
+<select id="kategori">
+<option value="">Pilih Kategori</option>
+<option>VIP</option>
+<option>Intimate Couple</option>
+</select>
+
+<input id="jumlah" type="number" placeholder="Jumlah Tiket">
+
+<button class="btn" onclick="toPayment()">Lanjut Pembayaran</button>
+
+</div>
+
+<!-- PAGE 3 -->
+<div class="page" id="page3">
+
+<h2 class="center">QRIS Payment</h2>
+
+<div class="card center">
+  <img src="QRIS_KAMU.png" width="200"><br><br>
+  <b>Total: Rp <span id="totalBayar"></span></b>
+</div>
+
+<input type="file" id="bukti">
+
+<button class="btn" onclick="beli()">Beli Sekarang</button>
+
+</div>
+
+<script>
+let harga={vip:400000,couple:350000};
+
+function changeQty(id,val){
+ let el=document.getElementById(id);
+ let num=parseInt(el.innerText)+val;
+ if(num<0)num=0;
+ el.innerText=num;
+ hitung();
+}
+
+function hitung(){
+ let vip=parseInt(document.getElementById("vip").innerText||0);
+ let couple=parseInt(document.getElementById("couple").innerText||0);
+ let total=(vip*harga.vip)+(couple*harga.couple);
+ document.getElementById("total").innerText=total.toLocaleString();
+}
+
+function toForm(){
+ if(document.getElementById("total").innerText=="0"){
+  alert("Pilih tiket dulu!");
+  return;
+ }
+ show(2);
+}
+
+function toPayment(){
+ let ids=["nama","nik","email","wa","alamat","kategori","jumlah"];
+ for(let i of ids){
+  if(document.getElementById(i).value==""){
+    alert("Semua wajib diisi!");
+    return;
+  }
+ }
+
+ let kat=document.getElementById("kategori").value;
+ let jml=document.getElementById("jumlah").value;
+ let total=(kat=="VIP"?harga.vip:harga.couple)*jml;
+
+ document.getElementById("totalBayar").innerText=total.toLocaleString();
+ show(3);
+}
+
+function beli(){
+ if(document.getElementById("bukti").value==""){
+  alert("Upload bukti pembayaran!");
+  return;
+ }
+
+ alert("Pembelian Berhasil!");
+ location.reload();
+}
+
+function show(p){
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+ document.getElementById("page"+p).classList.add("active");
+}
+
+let time=900;
+setInterval(()=>{
+ let m=Math.floor(time/60);
+ let s=time%60;
+ document.getElementById("countdown").innerText=
+ m+":"+(s<10?"0"+s:s);
+ if(time>0)time--;
+},1000);
+</script>
+
+</body>
+</html>
